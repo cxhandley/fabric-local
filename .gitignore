@@ -1,6 +1,7 @@
 data/lake/bronze/
 data/lake/silver/
 data/lake/gold/
+data/lake/raw/
 notebooks/executed/
 __pycache__/
 *.pyc
