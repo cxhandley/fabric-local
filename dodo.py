@@ -17,8 +17,7 @@ def _run_nb(name):
     return (
         f"papermill {src} {dst} "
         f"--cwd /workspace "
-        f"--kernel pyspark "
-        f"-p LAKE_ROOT /workspace/data/lake"
+        f"--kernel pyspark"
     )
 
 

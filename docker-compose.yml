@@ -1,5 +1,7 @@
+version: "3.9"
+
 services:
-  # ── Spark + Jupyter dev container ───────────────────────────────────
+  # ── Spark + Jupyter dev container (VS Code attaches here) ───────────
   spark-dev:
     build:
       context: .
@@ -9,18 +11,18 @@ services:
     volumes:
       - .:/workspace:cached
     ports:
-      - "2222:22"     # SSH — Positron Remote SSH connects here
       - "8888:8888"   # Jupyter (fallback)
       - "4040:4040"   # Spark UI
     environment:
       - SPARK_HOME=/opt/spark
+      - JAVA_HOME=/opt/java/openjdk
       - PYSPARK_PYTHON=python3
       - PYSPARK_DRIVER_PYTHON=python3
-      - MSSQL_HOST=mssql
-      - MSSQL_PORT=1433
-      - MSSQL_USER=sa
-      - MSSQL_PASSWORD=FabricLocal#2024
-      - MSSQL_DB=fabric_demo
+      - MSSQL_HOST=${MSSQL_HOST}
+      - MSSQL_PORT=${MSSQL_PORT}
+      - MSSQL_USER=${MSSQL_USER}
+      - MSSQL_PASSWORD=${MSSQL_SA_PASSWORD}
+      - MSSQL_DB=${MSSQL_DB}
     depends_on:
       mssql:
         condition: service_healthy
@@ -34,14 +36,14 @@ services:
     hostname: mssql
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "FabricLocal#2024"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_PID: Developer
     ports:
       - "1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "FabricLocal#2024" -C -Q "SELECT 1" || exit 1
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
       interval: 10s
       timeout: 5s
       retries: 10

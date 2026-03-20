@@ -4,9 +4,14 @@ Seed MSSQL with sample tables.  Run once after docker compose up:
     python scripts/seed_mssql.py
 """
 
-import time, pymssql
+import os, time, pymssql
 
-CONN = dict(server="mssql", port="1433", user="sa", password="FabricLocal#2024")
+CONN = dict(
+    server=os.getenv("MSSQL_HOST", "mssql"),
+    port=os.getenv("MSSQL_PORT", "1433"),
+    user=os.getenv("MSSQL_USER", "sa"),
+    password=os.environ["MSSQL_PASSWORD"],  # must be set — no hardcoded fallback
+)
 
 
 def wait_for_sql():
@@ -23,11 +28,12 @@ def wait_for_sql():
 
 def run():
     wait_for_sql()
+    db = os.getenv("MSSQL_DB", "fabric_demo")
     conn = pymssql.connect(**CONN, database="master", autocommit=True)
-    conn.cursor().execute("IF DB_ID('fabric_demo') IS NULL CREATE DATABASE fabric_demo")
+    conn.cursor().execute(f"IF DB_ID('{db}') IS NULL CREATE DATABASE [{db}]")
     conn.close()
 
-    conn = pymssql.connect(**CONN, database="fabric_demo", autocommit=True)
+    conn = pymssql.connect(**CONN, database=db, autocommit=True)
     cur = conn.cursor()
 
     cur.execute("""

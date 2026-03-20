@@ -24,11 +24,11 @@ def get_spark(app_name: str = "FabricLocal") -> SparkSession:
     )
 
 
-# ── MSSQL JDBC helpers ────────────────────────────────────────────────
+# ── MSSQL JDBC helpers (all values from environment, no defaults for secrets) ─
 MSSQL_HOST = os.getenv("MSSQL_HOST", "mssql")
 MSSQL_PORT = os.getenv("MSSQL_PORT", "1433")
 MSSQL_USER = os.getenv("MSSQL_USER", "sa")
-MSSQL_PASSWORD = os.getenv("MSSQL_PASSWORD", "FabricLocal#2024")
+MSSQL_PASSWORD = os.environ["MSSQL_PASSWORD"]  # must be set — no hardcoded fallback
 MSSQL_DB = os.getenv("MSSQL_DB", "fabric_demo")
 
 JDBC_URL = (

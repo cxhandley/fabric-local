@@ -1,0 +1,29 @@
+{
+    "name": "Fabric Local - PySpark",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "spark-dev",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "jupyter.kernels.filter": [],
+                "jupyter.notebookFileRoot": "/workspace",
+                "files.watcherExclude": {
+                    "**/data/lake/**": true
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-renderers",
+                "ms-mssql.mssql"
+            ]
+        }
+    },
+
+    "forwardPorts": [8888, 4040, 1433],
+    "postStartCommand": "echo '✅ Spark dev container ready — kernels: PySpark 3.5, SparkSQL (spylon)'"
+}
