@@ -1,0 +1,14 @@
+data/lake/bronze/
+data/lake/silver/
+data/lake/gold/
+notebooks/executed/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+derby.log
+metastore_db/
+spark-warehouse/
+mssql-data/
+.idea/
+*.swp
+.doit.db.db

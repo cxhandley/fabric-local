@@ -1,0 +1,57 @@
+services:
+  # ── Spark + Jupyter dev container ───────────────────────────────────
+  spark-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spark-dev
+    hostname: spark-dev
+    volumes:
+      - .:/workspace:cached
+    ports:
+      - "2222:22"     # SSH — Positron Remote SSH connects here
+      - "8888:8888"   # Jupyter (fallback)
+      - "4040:4040"   # Spark UI
+    environment:
+      - SPARK_HOME=/opt/spark
+      - PYSPARK_PYTHON=python3
+      - PYSPARK_DRIVER_PYTHON=python3
+      - MSSQL_HOST=mssql
+      - MSSQL_PORT=1433
+      - MSSQL_USER=sa
+      - MSSQL_PASSWORD=FabricLocal#2024
+      - MSSQL_DB=fabric_demo
+    depends_on:
+      mssql:
+        condition: service_healthy
+    networks:
+      - fabric-net
+
+  # ── SQL Server 2022 ─────────────────────────────────────────────────
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    hostname: mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "FabricLocal#2024"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "FabricLocal#2024" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - fabric-net
+
+volumes:
+  mssql-data:
+
+networks:
+  fabric-net:
+    driver: bridge
