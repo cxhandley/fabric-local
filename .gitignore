@@ -20,3 +20,4 @@ spark-warehouse/
 mssql-data/
 .idea/
 *.swp
+.doit.db.db
