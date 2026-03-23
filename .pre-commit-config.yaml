@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+        name: Strip notebook outputs
+        description: Strip output from Jupyter notebooks before committing
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.ipynb$'
+      - id: end-of-file-fixer
+        exclude: '\.ipynb$'
+      - id: check-yaml
+      - id: check-json
+        exclude: '\.ipynb$'
+      - id: check-added-large-files
+        args: ['--maxkb=1000']

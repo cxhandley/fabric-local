@@ -4,7 +4,16 @@ FROM eclipse-temurin:11-jdk-jammy
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl wget git unzip python3 python3-pip python3-venv \
         build-essential libffi-dev libpq-dev sudo \
+        openssh-client \
     && rm -rf /var/lib/apt/lists/*
+
+# ── Node.js 20 (required for Claude Code) ─────────────────────────────
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Claude Code ───────────────────────────────────────────────────────
+RUN npm install -g @anthropic-ai/claude-code
 
 # ── Spark 3.5.1 ──────────────────────────────────────────────────────
 ENV SPARK_VERSION=3.5.1
@@ -54,7 +63,7 @@ RUN mkdir -p /usr/local/share/jupyter/kernels/pyspark \
   }\n\
 }\n' > /usr/local/share/jupyter/kernels/pyspark/kernel.json
 
-# Spylon kernel (Spark SQL via %%sql magic) with env vars patched in
+# Spylon kernel (Spark SQL) with env vars patched in
 RUN python3 -m spylon_kernel install --sys-prefix \
     && python3 -c "\
 import json, glob, pathlib; \
@@ -64,6 +73,9 @@ dirs = glob.glob('/usr/local/**/kernels/spylon-kernel/kernel.json', recursive=Tr
   'PATH':'/opt/java/openjdk/bin:/opt/spark/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'}}, indent=2)) \
 for d in dirs]"
 
+# DuckDB kernel
+RUN python3 -m jupyter_duckdb.install
+
 # ── Spark defaults ────────────────────────────────────────────────────
 COPY conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 
@@ -71,7 +83,9 @@ COPY conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 ENV PYSPARK_PYTHON=python3
 ENV PYSPARK_DRIVER_PYTHON=python3
 
+# ── Pre-commit + nbstripout setup ─────────────────────────────────────
+RUN git config --system init.templateDir /usr/share/git-core/templates
+
 WORKDIR /workspace
 
-# Dev Container attaches directly — just keep alive
 CMD ["sleep", "infinity"]

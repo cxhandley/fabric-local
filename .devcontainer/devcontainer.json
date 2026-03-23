@@ -5,6 +5,11 @@
     "workspaceFolder": "/workspace",
     "shutdownAction": "stopCompose",
 
+    "mounts": [
+        // Persist Claude Code config across rebuilds
+        "source=claude-code-config,target=/root/.claude,type=volume"
+    ],
+
     "customizations": {
         "vscode": {
             "settings": {
@@ -13,17 +18,22 @@
                 "jupyter.notebookFileRoot": "/workspace",
                 "files.watcherExclude": {
                     "**/data/lake/**": true
-                }
+                },
+                "git.autofetch": true
             },
             "extensions": [
                 "ms-python.python",
                 "ms-toolsai.jupyter",
                 "ms-toolsai.jupyter-renderers",
-                "ms-mssql.mssql"
+                "ms-mssql.mssql",
+                "AnthropicAI.claude-code"
             ]
         }
     },
 
     "forwardPorts": [8888, 4040, 1433],
-    "postStartCommand": "echo '✅ Spark dev container ready — kernels: PySpark 3.5, SparkSQL (spylon)'"
+
+    // Set up pre-commit hooks + nbstripout on first start
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "postStartCommand": "echo '✅ Ready — kernels: PySpark 3.5, SparkSQL (spylon), DuckDB'"
 }
