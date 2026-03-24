@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # ── Spark + Jupyter dev container (VS Code attaches here) ───────────
   spark-dev:

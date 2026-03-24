@@ -4,7 +4,7 @@ FROM eclipse-temurin:11-jdk-jammy
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl wget git unzip python3 python3-pip python3-venv \
         build-essential libffi-dev libpq-dev sudo \
-        openssh-client \
+        openssh-client libicu70 \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Node.js 20 (required for Claude Code) ─────────────────────────────
@@ -74,7 +74,11 @@ dirs = glob.glob('/usr/local/**/kernels/spylon-kernel/kernel.json', recursive=Tr
 for d in dirs]"
 
 # DuckDB kernel
-RUN python3 -m jupyter_duckdb.install
+RUN DUCKDB_KERNEL_DIR=$(pip3 show jupyter-duckdb | grep Location | cut -d' ' -f2)/duckdb_kernel \
+    && echo "Installing DuckDB kernel from: $DUCKDB_KERNEL_DIR" \
+    && ls -la "$DUCKDB_KERNEL_DIR/kernel.json" \
+    && jupyter kernelspec install "$DUCKDB_KERNEL_DIR" --name duckdb --sys-prefix
+
 
 # ── Spark defaults ────────────────────────────────────────────────────
 COPY conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
