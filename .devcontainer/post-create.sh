@@ -16,9 +16,3 @@ nbstripout --install --attributes .gitattributes
 
 echo "✅ pre-commit hooks installed"
 echo "✅ nbstripout git filter installed"
-echo ""
-echo "📝 Git credentials are forwarded from your Windows host via ssh-agent."
-echo "   If git push fails, ensure ssh-agent is running on Windows:"
-echo "     Get-Service ssh-agent | Set-Service -StartupType Automatic"
-echo "     Start-Service ssh-agent"
-echo "     ssh-add ~/.ssh/id_ed25519"
